@@ -474,9 +474,74 @@
                 height: 35px;
             }
         }
+
+        
+        /* Add this to your existing CSS */
+        .music-launcher {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(90deg, #7c5cff, #ff5ca8);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-family: "Inter", sans-serif;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            user-select: none;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+        
+        .music-launcher:hover {
+            transform: translateY(-3px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .music-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 99;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+        
+        .music-info.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+
+    <a href="music-player.html" target="_blank" class="music-launcher" id="musicLauncher">
+        <i class="fas fa-external-link-alt"></i>
+        Open Music Player
+    </a>
+    
+    <div class="music-info" id="musicInfo">
+        <i class="fas fa-info-circle"></i> Music player opened in new tab
+    </div>
     <!-- Background particles -->
     <canvas id="bg-particles"></canvas>
     
@@ -566,6 +631,50 @@
     </audio>
     
     <script>
+
+        // Add this to your existing JavaScript
+        const musicLauncher = document.getElementById('musicLauncher');
+        const musicInfo = document.getElementById('musicInfo');
+        
+        // Show info when music player is opened
+        musicLauncher.addEventListener('click', () => {
+            musicInfo.classList.add('show');
+            setTimeout(() => {
+                musicInfo.classList.remove('show');
+            }, 3000);
+            
+            // Try to play music automatically in the new tab
+            localStorage.setItem('autoPlayMusic', 'true');
+        });
+        
+        // Check if we should auto-play music
+        if (localStorage.getItem('autoPlayMusic') === 'true') {
+            localStorage.removeItem('autoPlayMusic');
+            // This will be used by the music player page
+        }
+        
+        // Optional: Add a simple audio fallback for quick sounds
+        function playQuickSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 600;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log("Sound error:", e);
+            }
+        }
         // Configuration
         const CONFIG = {
             crushName: "Zelda",
