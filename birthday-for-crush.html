@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Birthday Zelda! 🎉</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg1: #0f1724;
+            --bg2: #0b1020;
+            --glass: rgba(255,255,255,0.06);
+            --accent1: #7c5cff;
+            --accent2: #ff5ca8;
+            --accent3: #00d4ff;
+            --muted: rgba(255,255,255,0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            min-height: 100%;
+            font-family: "Inter", system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, var(--bg1), var(--bg2));
+            color: #e6eef8;
+        }
+        
+        body {
+            position: relative;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        /* Background particles */
+        #bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Game area */
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        /* Canvas area */
+        .canvas-container {
+            flex: 1;
+            min-width: 300px;
+            min-height: 500px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #heartCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            display: block;
+            cursor: pointer;
+        }
+        
+        /* Instructions panel */
+        .instructions {
+            flex: 0 0 350px;
+            min-width: 300px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .instructions h2 {
+            color: var(--accent3);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions p {
+            color: rgba(230, 238, 248, 0.8);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Heart counter */
+        .heart-counter {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: auto;
+            text-align: center;
+        }
+        
+        .heart-counter h3 {
+            color: var(--accent2);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .heart-icons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .heart-icon {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .heart-icon.collected {
+            color: #ff5ca8;
+            text-shadow: 0 0 15px rgba(255, 92, 168, 0.7);
+            animation: pulse 0.5s ease;
+        }
+        
+        .counter-text {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 1rem;
+            color: #cfeaff;
+        }
+        
+        /* Messages panel */
+        .messages-panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        
+        .messages-panel h2 {
+            color: var(--accent1);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .message-container {
+            min-height: 200px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            border: 1px solid rgba(124, 92, 255, 0.1);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: rgba(230, 238, 248, 0.9);
+            white-space: pre-line;
+            font-family: "Inter", sans-serif;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        /* Music control */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-family: "Inter", sans-serif;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            user-select: none;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+            border: none;
+        }
+        
+        .music-control:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Celebration overlay */
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 8, 15, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+        }
+        
+        .celebration-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .celebration-content {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(3,6,22,0.8);
+            border: 1px solid rgba(124, 92, 255, 0.2);
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        .celebration-content h2 {
+            color: #fff;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .celebration-content p {
+            color: rgba(230, 238, 248, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .close-btn {
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 20px;
+        }
+        
+        /* Control instructions */
+        .controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: rgba(230, 238, 248, 0.7);
+        }
+        
+        .controls h4 {
+            color: var(--accent3);
+            margin-bottom: 10px;
+        }
+        
+        /* Music notification */
+        .music-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, rgba(124, 92, 255, 0.9), rgba(255, 92, 168, 0.9));
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+        }
+        
+        .music-notification.show {
+            transform: translateX(0);
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent1), var(--accent2));
+            border-radius: 4px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            .canvas-container, .instructions {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            body {
+                padding: 15px;
+            }
+            
+            .canvas-container, .instructions, .messages-panel {
+                padding: 20px;
+            }
+            
+            .celebration-content {
+                padding: 25px;
+            }
+            
+            .celebration-content h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .heart-icon {
+                font-size: 1.5rem;
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <canvas id="bg-particles"></canvas>
+    
+    <!-- Music notification -->
+    <div class="music-notification" id="musicNotification">
+        <i class="fas fa-music"></i>
+        <span>Click anywhere to enable music!</span>
+    </div>
+    
+    <!-- Music control -->
+    <button class="music-control" id="musicControl">
+        <i class="fas fa-play" id="musicIcon"></i>
+        <span id="musicText">Play Music</span>
+    </button>
+    
+    <!-- Main content -->
+    <div class="container">
+        <header class="header">
+            <h1>Happy Birthday, Zelda! 🎂</h1>
+            <p>A special interactive surprise from Cadel. Collect floating hearts to reveal the birthday message!</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="canvas-container">
+                <canvas id="heartCanvas"></canvas>
+                <div class="controls">
+                    <h4>How to collect hearts:</h4>
+                    <p>Move your mouse over the hearts - they'll follow your cursor! Click on any heart to collect it. Hearts that are ready to be collected will pulse brighter.</p>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h2>How to Play</h2>
+                <p>Move your cursor around the left area to attract the floating hearts. Click on them to collect!</p>
+                <p>Each heart you collect will reveal a part of the birthday message.</p>
+                <p>Collect all 8 hearts to see the complete message and unlock a special surprise!</p>
+                
+                <div class="heart-counter">
+                    <h3>Hearts Collected</h3>
+                    <div class="heart-icons" id="heartIcons">
+                        <!-- Heart icons will be inserted here by JavaScript -->
+                    </div>
+                    <div class="counter-text" id="counterText">0 / 8 hearts collected</div>
+                </div>
+                
+                <div class="controls" style="margin-top: 20px;">
+                    <h4>Quick Tips:</h4>
+                    <p>• Move cursor slowly for better control</p>
+                    <p>• Hearts near edges are easier to click</p>
+                    <p>• Try double-clicking if single click doesn't work</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="messages-panel">
+            <h2>Birthday Message for Zelda</h2>
+            <div class="message-container" id="messageContainer">
+                Collect hearts to reveal the birthday message...
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Made with ❤️ by Cadel for Zelda's special day | Happy Birthday!</p>
+        </div>
+    </div>
+    
+    <!-- Celebration overlay (hidden by default) -->
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="celebration-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p>You've collected all the hearts and unlocked the complete birthday message for Zelda!</p>
+            <p>Wishing you an amazing birthday filled with joy, laughter, and all the happiness you deserve.</p>
+            <p>May this year bring you closer to your dreams and fill your life with wonderful moments!</p>
+            <button class="close-btn" id="closeCelebration">Continue Celebration</button>
+        </div>
+    </div>
+    
+    <!-- Audio for background music - Using reliable music source -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-443.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <!-- Alternative music source in case primary fails -->
+    <audio id="altMusic" preload="none">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // Configuration
+        const CONFIG = {
+            crushName: "Zelda",
+            senderName: "Cadel",
+            totalHearts: 8,
+            messages: [
+                `Happy Birthday, Zelda! 🎉`,
+                `On your special day, I wanted to create something as unique and wonderful as you are.`,
+                `You bring so much light and positivity everywhere you go, and I'm truly grateful to know you.`,
+                `May this year be filled with incredible adventures, personal growth, and dreams coming true.`,
+                `Remember that you're capable of achieving anything you set your mind to.`,
+                `Wishing you success in all your endeavors, laughter that never ends, and joy in every moment.`,
+                `Thank you for being such an amazing person and friend.`,
+                `With all my best wishes for your birthday and always,\n- Cadel 💙`
+            ]
+        };
+        
+        // Game state
+        let gameState = {
+            collectedHearts: 0,
+            revealedMessages: [],
+            isMusicPlaying: false,
+            isCelebrationActive: false,
+            audioContextAllowed: false,
+            musicEnabled: true
+        };
+        
+        // DOM elements
+        const heartCanvas = document.getElementById('heartCanvas');
+        const ctx = heartCanvas.getContext('2d');
+        const messageContainer = document.getElementById('messageContainer');
+        const heartIconsContainer = document.getElementById('heartIcons');
+        const counterText = document.getElementById('counterText');
+        const celebrationOverlay = document.getElementById('celebrationOverlay');
+        const closeCelebrationBtn = document.getElementById('closeCelebration');
+        const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const altMusic = document.getElementById('altMusic');
+        const bgParticles = document.getElementById('bg-particles');
+        const musicNotification = document.getElementById('musicNotification');
+        
+        // Heart objects
+        let hearts = [];
+        let particles = [];
+        let mouse = { x: 0, y: 0, isMoving: false };
+        
+        // Initialize the application
+        function initApp() {
+            setupCanvas();
+            animate();
+            
+            // Show music notification for 5 seconds
+            setTimeout(() => {
+                musicNotification.classList.add('show');
+                setTimeout(() => {
+                    musicNotification.classList.remove('show');
+                }, 5000);
+            }, 1000);
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initialize message
+            updateMessageDisplay();
+            updateCounterText();
+            
+            // Preload and setup music
+            setupMusic();
+        }
+        
+        // Setup music system
+        function setupMusic() {
+            // Configure background music
+            backgroundMusic.volume = 0.5;
+            backgroundMusic.preload = 'auto';
+            
+            // Configure alternative music
+            altMusic.volume = 0.5;
+            altMusic.loop = true;
+            
+            // Add error handling for music
+            backgroundMusic.addEventListener('error', function(e) {
+                console.log('Primary music failed, trying alternative...');
+                switchToAlternativeMusic();
+            });
+            
+            // Try to load the music immediately
+            backgroundMusic.load();
+            
+            // Show notification that music is ready
+            backgroundMusic.addEventListener('canplaythrough', function() {
+                console.log('Music loaded and ready to play');
+                // Enable music control
+                musicControl.style.display = 'flex';
+            });
+        }
+        
+        // Switch to alternative music
+        function switchToAlternativeMusic() {
+            console.log('Switching to alternative music source');
+            altMusic.load();
+            altMusic.play()
+                .then(() => {
+                    console.log('Alternative music playing');
+                    gameState.isMusicPlaying = true;
+                    musicIcon.className = 'fas fa-pause';
+                    musicText.textContent = 'Pause Music';
+                })
+                .catch(error => {
+                    console.log('Alternative music also failed:', error);
+                    musicControl.style.display = 'none';
+                });
+        }
+        
+        // Play music with user interaction
+        function playMusic() {
+            if (!gameState.musicEnabled) return;
+            
+            // First try the main music source
+            if (!backgroundMusic.error) {
+                backgroundMusic.play()
+                    .then(() => {
+                        console.log('Music started playing');
+                        gameState.isMusicPlaying = true;
+                        musicIcon.className = 'fas fa-pause';
+                        musicText.textContent = 'Pause Music';
+                        
+                        // Fade in volume
+                        fadeInMusic(backgroundMusic);
+                    })
+                    .catch(error => {
+                        console.log('Primary music play failed:', error);
+                        // Try alternative
+                        switchToAlternativeMusic();
+                    });
+            } else {
+                // Try alternative
+                switchToAlternativeMusic();
+            }
+        }
+        
+        // Fade in music volume
+        function fadeInMusic(audioElement) {
+            let volume = 0;
+            audioElement.volume = volume;
+            
+            const fadeInterval = setInterval(() => {
+                volume += 0.05;
+                if (volume >= 0.5) {
+                    volume = 0.5;
+                    clearInterval(fadeInterval);
+                }
+                audioElement.volume = volume;
+            }, 100);
+        }
+        
+        // Fade out music volume
+        function fadeOutMusic(audioElement, callback) {
+            let volume = audioElement.volume;
+            
+            const fadeInterval = setInterval(() => {
+                volume -= 0.05;
+                if (volume <= 0) {
+                    volume = 0;
+                    clearInterval(fadeInterval);
+                    audioElement.pause();
+                    if (callback) callback();
+                }
+                audioElement.volume = volume;
+            }, 100);
+        }
+        
+        // Pause music
+        function pauseMusic() {
+            if (gameState.isMusicPlaying) {
+                if (!backgroundMusic.error && !backgroundMusic.paused) {
+                    fadeOutMusic(backgroundMusic, () => {
+                        gameState.isMusicPlaying = false;
+                        musicIcon.className = 'fas fa-play';
+                        musicText.textContent = 'Play Music';
+                    });
+                } else if (!altMusic.paused) {
+                    fadeOutMusic(altMusic, () => {
+                        gameState.isMusicPlaying = false;
+                        musicIcon.className = 'fas fa-play';
+                        musicText.textContent = 'Play Music';
+                    });
+                }
+            }
+        }
+        
+        // Toggle music
+        function toggleMusic() {
+            if (gameState.isMusicPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+        
+        // Canvas setup
+        function setupCanvas() {
+            // Set canvas size to match container
+            const container = heartCanvas.parentElement;
+            heartCanvas.width = container.clientWidth - 40; // Account for padding
+            heartCanvas.height = 400; // Fixed height for better interaction
+            
+            // Create heart icons in the UI
+            heartIconsContainer.innerHTML = '';
+            for (let i = 0; i < CONFIG.totalHearts; i++) {
+                const heartIcon = document.createElement('div');
+                heartIcon.className = 'heart-icon';
+                heartIcon.innerHTML = '❤️';
+                heartIconsContainer.appendChild(heartIcon);
+            }
+            
+            // Create floating hearts
+            createHearts();
+            
+            // Create background particles
+            createBackgroundParticles();
+        }
+        
+        // Create floating hearts
+        function createHearts() {
+            hearts = [];
+            const heartCount = 12; // More hearts for easier collection
+            
+            for (let i = 0; i < heartCount; i++) {
+                hearts.push({
+                    x: Math.random() * heartCanvas.width,
+                    y: Math.random() * heartCanvas.height,
+                    size: 20 + Math.random() * 25, // Larger hearts for easier clicking
+                    speedX: (Math.random() - 0.5) * 1.2,
+                    speedY: (Math.random() - 0.5) * 1.2,
+                    color: `hsl(${Math.random() * 60 + 300}, 100%, 70%)`, // Brighter colors
+                    collected: false,
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.03,
+                    pulse: Math.random() * Math.PI * 2,
+                    id: i,
+                    // Add attraction properties
+                    attraction: 0.15 + Math.random() * 0.1,
+                    // Add hover state
+                    hover: false
+                });
+            }
+        }
+        
+        // Create background particles
+        function createBackgroundParticles() {
+            particles = [];
+            const particleCount = window.innerWidth < 768 ? 30 : 60;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    size: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.3,
+                    speedY: (Math.random() - 0.5) * 0.3,
+                    color: `rgba(124, 92, 255, ${Math.random() * 0.3 + 0.1})`,
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        
+        // Draw background particles
+        function drawBackgroundParticles() {
+            const particleCtx = bgParticles.getContext('2d');
+            
+            // Resize canvas to window
+            bgParticles.width = window.innerWidth;
+            bgParticles.height = window.innerHeight;
+            
+            particleCtx.clearRect(0, 0, bgParticles.width, bgParticles.height);
+            
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.pulse += 0.02;
+                
+                // Wrap around edges
+                if (p.x < -10) p.x = bgParticles.width + 10;
+                if (p.x > bgParticles.width + 10) p.x = -10;
+                if (p.y < -10) p.y = bgParticles.height + 10;
+                if (p.y > bgParticles.height + 10) p.y = -10;
+                
+                // Draw particle
+                particleCtx.beginPath();
+                const size = p.size + Math.sin(p.pulse) * 0.3;
+                particleCtx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                particleCtx.fillStyle = p.color;
+                particleCtx.fill();
+            });
+        }
+        
+        // Draw a heart shape
+        function drawHeart(ctx, x, y, size, color, rotation, isHover) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            
+            // Make heart bigger when hovered
+            const displaySize = isHover ? size * 1.2 : size;
+            
+            ctx.beginPath();
+            const topCurveHeight = displaySize * 0.3;
+            ctx.moveTo(0, displaySize / 4);
+            
+            // Left top curve
+            ctx.bezierCurveTo(
+                -displaySize / 2, -displaySize / 4,
+                -displaySize, displaySize / 3,
+                0, displaySize
+            );
+            
+            // Right top curve
+            ctx.bezierCurveTo(
+                displaySize, displaySize / 3,
+                displaySize / 2, -displaySize / 4,
+                0, displaySize / 4
+            );
+            
+            ctx.closePath();
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(-displaySize, -displaySize, displaySize, displaySize);
+            const baseColor = isHover ? color.replace('70%)', '85%)') : color;
+            gradient.addColorStop(0, baseColor);
+            gradient.addColorStop(1, baseColor.replace('%)', '80%)'));
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Add glow effect (stronger when hovered)
+            ctx.shadowColor = baseColor;
+            ctx.shadowBlur = isHover ? 25 : 15;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            ctx.restore();
+        }
+        
+        // Draw all hearts
+        function drawHearts() {
+            ctx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+            
+            // Draw subtle grid background
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            
+            // Draw grid lines
+            const gridSize = 40;
+            for (let x = 0; x < heartCanvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, heartCanvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < heartCanvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(heartCanvas.width, y);
+                ctx.stroke();
+            }
+            
+            hearts.forEach(heart => {
+                if (heart.collected) return;
+                
+                // Update position with mouse attraction
+                const dx = mouse.x - heart.x;
+                const dy = mouse.y - heart.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Stronger attraction when mouse is moving
+                if (distance < 300) {
+                    const attractionForce = mouse.isMoving ? heart.attraction * 1.5 : heart.attraction;
+                    const force = Math.min(attractionForce, 150 / distance);
+                    
+                    heart.speedX += (dx / distance) * force * 0.1;
+                    heart.speedY += (dy / distance) * force * 0.1;
+                }
+                
+                // Update position
+                heart.x += heart.speedX;
+                heart.y += heart.speedY;
+                heart.rotation += heart.rotationSpeed;
+                heart.pulse += 0.05;
+                
+                // Apply speed limits
+                const maxSpeed = 2.5;
+                const currentSpeed = Math.sqrt(heart.speedX * heart.speedX + heart.speedY * heart.speedY);
+                if (currentSpeed > maxSpeed) {
+                    heart.speedX = (heart.speedX / currentSpeed) * maxSpeed;
+                    heart.speedY = (heart.speedY / currentSpeed) * maxSpeed;
+                }
+                
+                // Add some friction
+                heart.speedX *= 0.98;
+                heart.speedY *= 0.98;
+                
+                // Bounce off walls
+                const bounceFactor = 0.8;
+                if (heart.x < heart.size || heart.x > heartCanvas.width - heart.size) {
+                    heart.speedX *= -bounceFactor;
+                    heart.x = heart.x < heart.size ? heart.size : heartCanvas.width - heart.size;
+                }
+                if (heart.y < heart.size || heart.y > heartCanvas.height - heart.size) {
+                    heart.speedY *= -bounceFactor;
+                    heart.y = heart.y < heart.size ? heart.size : heartCanvas.height - heart.size;
+                }
+                
+                // Check hover state
+                const hoverDistance = Math.sqrt(
+                    Math.pow(mouse.x - heart.x, 2) + Math.pow(mouse.y - heart.y, 2)
+                );
+                heart.hover = hoverDistance < heart.size * 1.5;
+                
+                // Draw heart with pulsing effect
+                const pulseSize = heart.size + Math.sin(heart.pulse) * 5;
+                drawHeart(ctx, heart.x, heart.y, pulseSize, heart.color, heart.rotation, heart.hover);
+            });
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Update mouse position
+            heartCanvas.addEventListener('mousemove', (e) => {
+                const rect = heartCanvas.getBoundingClientRect();
+                const scaleX = heartCanvas.width / rect.width;
+                const scaleY = heartCanvas.height / rect.height;
+                
+                mouse.x = (e.clientX - rect.left) * scaleX;
+                mouse.y = (e.clientY - rect.top) * scaleY;
+                mouse.isMoving = true;
+                
+                // Reset movement flag after a short delay
+                clearTimeout(mouse.timeout);
+                mouse.timeout = setTimeout(() => {
+                    mouse.isMoving = false;
+                }, 150);
+            });
+            
+            // Handle clicks
+            heartCanvas.addEventListener('click', handleCanvasClick);
+            
+            // Also allow touch events for mobile
+            heartCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = heartCanvas.getBoundingClientRect();
+                const scaleX = heartCanvas.width / rect.width;
+                const scaleY = heartCanvas.height / rect.height;
+                
+                mouse.x = (touch.clientX - rect.left) * scaleX;
+                mouse.y = (touch.clientY - rect.top) * scaleY;
+                mouse.isMoving = true;
+                
+                // Trigger click at touch location
+                handleCanvasClick(touch);
+            }, { passive: false });
+            
+            // Handle celebration close
+            closeCelebrationBtn.addEventListener('click', hideCelebration);
+            
+            // Handle music control
+            musicControl.addEventListener('click', toggleMusic);
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                setupCanvas();
+                createBackgroundParticles();
+            });
+            
+            // Enable music on first user interaction anywhere
+            const enableMusicOnInteraction = () => {
+                if (!gameState.audioContextAllowed) {
+                    gameState.audioContextAllowed = true;
+                    playMusic();
+                }
+            };
+            
+            // Multiple ways to enable music
+            document.addEventListener('click', enableMusicOnInteraction, { once: true });
+            document.addEventListener('touchstart', enableMusicOnInteraction, { once: true });
+            document.addEventListener('keydown', enableMusicOnInteraction, { once: true });
+            
+            // Also enable music when user interacts with the canvas
+            heartCanvas.addEventListener('click', enableMusicOnInteraction, { once: true });
+        }
+        
+        // Check for heart clicks
+        function handleCanvasClick(e) {
+            const rect = heartCanvas.getBoundingClientRect();
+            const scaleX = heartCanvas.width / rect.width;
+            const scaleY = heartCanvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            
+            // Try to find the closest heart
+            let closestHeart = null;
+            let minDistance = Infinity;
+            
+            hearts.forEach(heart => {
+                if (heart.collected) return;
+                
+                const distance = Math.sqrt(
+                    Math.pow(x - heart.x, 2) + Math.pow(y - heart.y, 2)
+                );
+                
+                // Larger click area for easier selection
+                const clickRadius = heart.size * 1.5;
+                
+                if (distance < clickRadius && distance < minDistance) {
+                    minDistance = distance;
+                    closestHeart = heart;
+                }
+            });
+            
+            if (closestHeart) {
+                collectHeart(closestHeart);
+            }
+        }
+        
+        // Collect a heart
+        function collectHeart(heart) {
+            heart.collected = true;
+            gameState.collectedHearts++;
+            
+            // Update UI
+            updateHeartIcons();
+            updateCounterText();
+            
+            // Add message if available
+            if (gameState.collectedHearts <= CONFIG.messages.length) {
+                gameState.revealedMessages.push(CONFIG.messages[gameState.collectedHearts - 1]);
+                updateMessageDisplay();
+            }
+            
+            // Create particle explosion
+            createExplosion(heart.x, heart.y, heart.color);
+            
+            // Play collection sound
+            playCollectionSound();
+            
+            // Check if all hearts collected
+            if (gameState.collectedHearts >= CONFIG.totalHearts) {
+                setTimeout(() => {
+                    showCelebration();
+                }, 800);
+            }
+            
+            // Add a new heart after a delay if we need more
+            setTimeout(() => {
+                const activeHearts = hearts.filter(h => !h.collected).length;
+                if (activeHearts < 5 && hearts.length < 20) {
+                    addNewHeart();
+                }
+            }, 500);
+        }
+        
+        // Create explosion effect
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 3 + 1;
+                const size = Math.random() * 3 + 2;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    size: size,
+                    speedX: Math.cos(angle) * speed,
+                    speedY: Math.sin(angle) * speed,
+                    color: color,
+                    pulse: Math.random() * Math.PI * 2,
+                    life: 80
+                });
+            }
+        }
+        
+        // Add a new heart
+        function addNewHeart() {
+            hearts.push({
+                x: Math.random() * heartCanvas.width,
+                y: Math.random() * heartCanvas.height,
+                size: 22 + Math.random() * 25,
+                speedX: (Math.random() - 0.5) * 1.5,
+                speedY: (Math.random() - 0.5) * 1.5,
+                color: `hsl(${Math.random() * 60 + 300}, 100%, 70%)`,
+                collected: false,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.03,
+                pulse: Math.random() * Math.PI * 2,
+                id: Date.now() + Math.random(),
+                attraction: 0.15 + Math.random() * 0.1,
+                hover: false
+            });
+        }
+        
+        // Update heart icons in UI
+        function updateHeartIcons() {
+            const heartIcons = document.querySelectorAll('.heart-icon');
+            heartIcons.forEach((icon, index) => {
+                if (index < gameState.collectedHearts) {
+                    icon.classList.add('collected');
+                } else {
+                    icon.classList.remove('collected');
+                }
+            });
+        }
+        
+        // Update counter text
+        function updateCounterText() {
+            counterText.textContent = `${gameState.collectedHearts} / ${CONFIG.totalHearts} hearts collected`;
+        }
+        
+        // Update message display
+        function updateMessageDisplay() {
+            messageContainer.textContent = gameState.revealedMessages.join('\n\n');
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        
+        // Show celebration overlay
+        function showCelebration() {
+            gameState.isCelebrationActive = true;
+            celebrationOverlay.classList.add('active');
+            
+            // Play celebration sound
+            playCelebrationSound();
+            
+            // Increase music volume during celebration
+            if (gameState.isMusicPlaying) {
+                if (!backgroundMusic.error && !backgroundMusic.paused) {
+                    backgroundMusic.volume = 0.7;
+                } else if (!altMusic.paused) {
+                    altMusic.volume = 0.7;
+                }
+            }
+        }
+        
+        // Hide celebration overlay
+        function hideCelebration() {
+            gameState.isCelebrationActive = false;
+            celebrationOverlay.classList.remove('active');
+            
+            // Return music to normal volume
+            if (gameState.isMusicPlaying) {
+                if (!backgroundMusic.error && !backgroundMusic.paused) {
+                    backgroundMusic.volume = 0.5;
+                } else if (!altMusic.paused) {
+                    altMusic.volume = 0.5;
+                }
+            }
+        }
+        
+        // Play collection sound
+        function playCollectionSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 600 + Math.random() * 400;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log("Sound error:", e);
+            }
+        }
+        
+        // Play celebration sound
+        function playCelebrationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Play multiple tones for celebration
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        // Different frequencies for a celebratory chord
+                        const frequencies = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                        oscillator.frequency.value = frequencies[i % frequencies.length];
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    }, i * 100);
+                }
+            } catch (e) {
+                console.log("Celebration sound error:", e);
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            drawHearts();
+            drawBackgroundParticles();
+            requestAnimationFrame(animate);
+        }
+        
+        // Start the application when page loads
+        window.addEventListener('load', initApp);
+
+        function hideCelebration() {
+    gameState.isCelebrationActive = false;
+    celebrationOverlay.classList.remove('active');
+
+    // Reveal full message immediately
+    messageContainer.textContent = CONFIG.messages.join('\n\n');
+    counterText.textContent = `${CONFIG.totalHearts} / ${CONFIG.totalHearts} hearts collected`;
+
+    // Start background music automatically
+    if (!gameState.isMusicPlaying) {
+        backgroundMusic.volume = 0.5;
+        backgroundMusic.play().then(() => {
+            gameState.isMusicPlaying = true;
+            musicIcon.className = 'fas fa-pause';
+            musicText.textContent = 'Pause Music';
+        }).catch(e => {
+            console.log("Music autoplay prevented");
+        });
+    }
+}
+
+    </script>
+</body>
+</html>
